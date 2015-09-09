@@ -6197,6 +6197,13 @@ angular.module('mm.addons.frontpage', [])
     $mmSideMenuDelegateProvider.registerNavHandler('mmaFrontpage', '$mmaFrontPageHandlers.sideMenuNav', mmaFrontpagePriority);
 }]);
 
+angular.module('mm.addons.dashboard', [])
+.constant('mmaDashboardPriority', 1000)
+.config(["$mmSideMenuDelegateProvider", "mmaDashboardPriority", function($mmSideMenuDelegateProvider, mmaFrontpagePriority) {
+    $mmSideMenuDelegateProvider.registerNavHandler('mmaDashboard', '$mmaDashboardHandlers.sideMenuNav', mmaFrontpagePriority);
+}]);
+
+
 angular.module('mm.addons.grades', [])
 .constant('mmaGradesPriority', 400)
 .constant('mmaGradesViewGradesPriority', 400)
