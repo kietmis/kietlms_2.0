@@ -1,16 +1,9 @@
 {
-    "downloading": "מוריד...",
-    "emptyfilelist": "אין קבצים להציג",
-    "errorcapturingaudio": "שגיאה בקבלת האודיו",
-    "errorcapturingvideo": "שגיאה בקבלת הוידאו",
-    "errorreadingfile": "שגיאה בקריאת קובץ \"{$a}\"",
-    "file": "קובץ",
-    "fileuploaded": "הקובץ הועלה",
-    "myfiles": "הקבצים שלי",
-    "sitefiles": "קבצי האתר",
-    "success": "הצלחה",
-    "uploadafile": "העלאת קובץ",
-    "uploadfiles": "יכול להעלות קבצים",
-    "uploading": "מעלה קבצים",
-    "video": "וידאו"
+    "addnewnote": "הוספת הערה חדשה",
+    "coursenotes": "הערות על הסטודנט הזמינות לכל המורים בקורס ",
+    "eventnotecreated": "הערה נוצרה",
+    "note": "הערה",
+    "personalnotes": "הערות על הסטודנט הזמינות לך בלבד",
+    "publishstate": "הקשר",
+    "sitenotes": "הערות על הסטודנט הזמינות לכל המורים במערכת"
 }

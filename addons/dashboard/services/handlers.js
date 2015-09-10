@@ -12,30 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.files')
+angular.module('mm.addons.dashboard')
 
 /**
- * Files handlers factory.
+ * Dashboard handlers factory.
  *
  * This factory holds the different handlers used for delegates.
  *
- * @module mm.addons.files
+ * @module mm.addons.dashboard
  * @ngdoc service
- * @name $mmaFilesHandlers
+ * @name $mmaDashboardHandlers
  */
-.factory('$mmaFilesHandlers', function($log, $mmaFiles) {
-    $log = $log.getInstance('$mmaFilesHandlers');
+.factory('$mmaDashboardHandlers', function($mmaDashboard, $mmSite, $translate, $ionicLoading, $ionicModal, $mmUtil) {
 
     var self = {};
 
     /**
-     * Side menu nav handler.
+     * Add a note handler.
      *
-     * @module mm.addons.files
+     * @module mm.addons.dashboard
      * @ngdoc method
-     * @name $mmaFilesHandlers#sideMenuNav
+     * @name $mmaDashboardHandlers#addNote
      */
-    self.sideMenuNav = function() {
+    self.addNote = function() {
 
         var self = {};
 
@@ -45,27 +44,144 @@ angular.module('mm.addons.files')
          * @return {Boolean} True if handler is enabled, false otherwise.
          */
         self.isEnabled = function() {
-            return $mmaFiles.isPluginEnabled();
+            return $mmaDashboard.isPluginAddNoteEnabled();
+        };
+
+        /**
+         * Check if handler is enabled for this user in this context.
+         *
+         * @param {Object} user     User to check.
+         * @param {Number} courseId Course ID.
+         * @return {Boolean}        True if handler is enabled, false otherwise.
+         */
+        self.isEnabledForUser = function(user, courseId) {
+            // Active course required.
+            return courseId && user.id != $mmSite.getUserId();
         };
 
         /**
          * Get the controller.
          *
-         * @return {Object} Controller.
+         * @param {Object} user     Course ID.
+         * @param {Number} courseId Course ID.
+         * @return {Object}         Controller.
          */
-        self.getController = function() {
+        self.getController = function(user, courseid) {
 
             /**
-             * Side menu nav handler controller.
+             * Add note handler controller.
              *
-             * @module mm.addons.files
+             * @module mm.addons.dashboard
              * @ngdoc controller
-             * @name $mmaFilesHandlers#sideMenuNav:controller
+             * @name $mmaDashboardHandlers#addNote:controller
              */
             return function($scope) {
-                $scope.icon = 'ion-folder';
-                $scope.title = 'mma.files.myfiles';
-                $scope.state = 'site.files';
+
+                // Button title.
+                $scope.title = 'mma.dashboard.addnewnote';
+
+                $ionicModal.fromTemplateUrl('addons/dashboard/templates/add.html', {
+                    scope: $scope,
+                    animation: 'slide-in-up'
+                }).then(function(m) {
+                    $scope.modal = m;
+                });
+
+                $scope.closeModal = function(){
+                    $scope.modal.hide();
+                };
+
+                $scope.addNote = function(){
+                    var loadingModal = $mmUtil.showModalLoading('mm.core.sending', true);
+                    // Freeze the add note button.
+                    $scope.processing = true;
+
+                    $mmaDashboard.addNote(user.id, courseid, $scope.note.publishstate, $scope.note.text).then(function() {
+                        $mmUtil.showModal('mm.core.success', 'mma.dashboard.eventnotecreated');
+                        $scope.closeModal();
+                    }, function(error) {
+                        $mmUtil.showErrorModal(error);
+                        $scope.processing = false;
+                    }).finally(function() {
+                        loadingModal.dismiss();
+                    });
+                };
+
+                $scope.action = function($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+
+                    $scope.note = {
+                        publishstate: 'personal',
+                        text: ''
+                    };
+                    $scope.processing = false;
+
+                    $scope.modal.show();
+
+                };
+            };
+
+        };
+
+        return self;
+    };
+
+    /**
+     * Course nav handler.
+     *
+     * @module mm.addons.dashboard
+     * @ngdoc method
+     * @name $mmaDashboardHandlers#coursesNav
+     */
+    self.coursesNav = function() {
+
+        var self = {};
+
+        /**
+         * Check if handler is enabled.
+         *
+         * @return {Boolean} True if handler is enabled, false otherwise.
+         */
+        self.isEnabled = function() {
+            return $mmaDashboard.isPluginViewDashboardEnabled();
+        };
+
+        /**
+         * Check if handler is enabled for this course.
+         *
+         * @param {Number} courseId Course ID.
+         * @return {Boolean}        True if handler is enabled, false otherwise.
+         */
+        self.isEnabledForCourse = function(courseId) {
+            return true;
+        };
+
+        /**
+         * Get the controller.
+         *
+         * @param {Number} courseId Course ID.
+         * @return {Object}         Controller.
+         */
+        self.getController = function(courseId) {
+
+            /**
+             * Courses nav handler controller.
+             *
+             * @module mm.addons.dashboard
+             * @ngdoc controller
+             * @name $mmaDashboardHandlers#coursesNav:controller
+             */
+            return function($scope, $state) {
+                $scope.icon = 'ion-ios-list';
+                $scope.title = 'mma.dashboard.dashboard';
+                $scope.action = function($event, course) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                    $state.go('site.dashboard-types', {
+                        course: course
+                    });
+                };
             };
         };
 

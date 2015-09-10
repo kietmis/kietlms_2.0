@@ -1,0 +1,23 @@
+<ion-view view-title="{{ 'mma.dashboard.dashboard' | translate }}">
+    <mm-split-view>
+        <ion-content>
+            <ul>
+                <li>
+                    <a class="item" mm-split-view-link="site.dashboard-list({courseid: courseid, type: 'site'})" title="{{ 'mma.dashboard.sitedashboard' | translate }}">
+                        {{ 'mma.dashboard.sitedashboard' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="item" mm-split-view-link="site.dashboard-list({courseid: courseid, type: 'course'})" title="{{ 'mma.dashboard.coursedashboard' | translate }}">
+                        {{ 'mma.dashboard.coursedashboard' | translate }}
+                    </a>
+                </li>
+                <li>
+                    <a class="item" mm-split-view-link="site.dashboard-list({courseid: courseid, type: 'personal'})" title="{{ 'mma.dashboard.personaldashboard' | translate }}">
+                        {{ 'mma.dashboard.personaldashboard' | translate }}
+                    </a>
+                </li>
+            </ul>
+        </ion-content>
+    </mm-split-view>
+</ion-view>

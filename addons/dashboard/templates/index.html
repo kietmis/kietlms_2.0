@@ -1,9 +1,10 @@
-<ion-view view-title="{{'mma.files.myfiles' | translate}}">
-    <ion-content padding="true">
-        <section ng-if="canAccessFiles()">
-            <section class="list card" ng-if="showPrivateFiles()">
-                <a ui-sref="site.files-list({root: 'my'})" class="item item-icon-right" title="{{ 'mma.files.myprivatefiles' | translate }}">
-                     <ul id="general-menu" class="nav nav-v js-accordion"> <li class="nav-item">	
+<ion-view view-title="{{ 'mma.dashboard.dashboard' | translate }}">
+    <ion-nav-buttons side="secondary">
+        <button ng-if="profileLink" class="button button-icon icon ion-person" mm-user-link userid="{{userId}}"></button>
+    </ion-nav-buttons>
+
+    <mm-split-view>
+  <ul id="general-menu" class="nav nav-v js-accordion"> <li class="nav-item">	
         	<a href="#" class="toogler expand touch-row">
             	<span class="plugin-ico app-ico"><img src="img/ico-course.png" border="0"></span>
             	<%= MM.lang.s("student_dashboard") %>
@@ -125,32 +126,5 @@
 				</li>
 			</ul>
     </li></ul>
-                    {{ 'mma.files.myprivatefiles' | translate }}
-                </a>
-                <div class="item item-text-wrap"><p>{{ 'mma.files.myprivatefilesdesc' | translate }}</p></div>
-            </section>
-
-            <section class="list card">
-                <a ui-sref="site.files-list({root: 'site'})" class="item item-icon-right" title="{{ 'mma.files.sitefiles' | translate }}">
-                    <i class="icon ion-ios-arrow-right"></i>
-                    {{ 'mma.files.sitefiles' | translate }}
-                </a>
-                <div class="item item-text-wrap"><p>{{ 'mma.files.sitefilesdesc' | translate }}</p></div>
-            </section>
-
-            <div class="list card" ng-if="!canDownload()">
-                <div class="item item-text-wrap"><p>{{ 'mma.files.admindisableddownload' | translate }}</p></div>
-            </div>
-        </section>
-
-        <section ng-if="showUpload()">
-            <div class="card">
-                <h2 class="item-body">{{ 'mma.files.uploadfiles' | translate }}</h2>
-                <p class="item-body">{{ 'mma.files.clicktoupload' | translate }}</p>
-            </div>
-            <a class="button button-block" ng-click="add()">
-                <i class="icon ion-plus"></i> {{ 'mma.files.uploadafile' | translate }}
-            </a>
-        </section>
-    </ion-content>
+    </mm-split-view>
 </ion-view>

@@ -1,21 +1,25 @@
 <ion-view>
-    <ion-nav-title>{{title}}</ion-nav-title>
-    <ion-nav-buttons side="secondary">
-        <button class="button button-icon ion-plus" ng-click="add()" ng-if="showUpload()" aria-label="{{ 'mma.files.uploadafile' | translate }}"></button>
-    </ion-nav-buttons>
+    <ion-nav-title>{{ title }}</ion-nav-title>
+
     <ion-content>
-        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="filesLoaded" on-refresh="refreshFiles()"></ion-refresher>
-        <mm-loading hide-until="filesLoaded">
-            <ul class="list">
-                <li ng-repeat="file in files">
-                    <a ui-sref="site.files-list({path: file.link, title: file.filename})" class="item item-media" ng-if="file.isdir">
-                        <img ng-src="{{file.imgpath}}" alt="" role="presentation">
-                        {{file.filename}}
-                    </a>
-                    <mm-file ng-if="!file.isdir" file="file" component="{{component}}" component-id="{{file.contextid}}" timemodified="{{file.timemodified}}"></mm-file>
-                </li>
-                <li ng-if="count == 0" class="item">{{ 'mma.files.emptyfilelist' | translate }}</li>
-            </ul>
+        <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="dashboardLoaded"
+                       on-refresh="refreshDashboard()">
+        </ion-refresher>
+        <mm-loading hide-until="dashboardLoaded">
+            <div class="list">
+                <article class="card" ng-repeat="note in dashboard">
+                        <div class="item item-avatar">
+                            <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}">
+                            <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="" role="presentation">
+                            <div class="item-note">{{note.lastmodified | mmDateDayOrTime}}</div>
+                            <p>{{note.userfullname}}</p>
+                        </div>
+                        <div class="item item-body">
+                            <p><mm-format-text watch="true" clean="true">{{note.content}}</mm-format-text></p>
+                        </div>
+                </article>
+                <div ng-if="dashboard.length == 0" class="item item-text-wrap">{{ 'mma.dashboard.nodashboard' | translate }}</div>
+            </div>
         </mm-loading>
     </ion-content>
 </ion-view>

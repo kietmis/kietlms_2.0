@@ -12,98 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.files')
+angular.module('mm.addons.dashboard')
 
-.controller('mmaFilesListController', function($q, $scope, $stateParams, $mmaFiles, $mmSite, $translate, $mmUtil,
-        $ionicHistory, mmaFilesUploadStateName, $state, $mmApp, mmaFilesMyComponent, mmaFilesSiteComponent) {
+/**
+ * Controller to handle dashboard.
+ *
+ * @module mm.addons.dashboard
+ * @ngdoc controller
+ * @name mmaDashboardListCtrl
+ */
+.controller('mmaDashboardListCtrl', function($scope, $stateParams, $mmUtil, $mmaDashboard, $mmSite, $translate) {
 
-    var path = $stateParams.path,
-        root = $stateParams.root,
-        title,
-        promise;
+    var courseid = $stateParams.courseid,
+        type = $stateParams.type;
 
-    // We're loading the files.
-    $scope.count = -1;
-    $scope.component = root === 'my' ? mmaFilesMyComponent : mmaFilesSiteComponent;
+    $scope.courseid = courseid;
+    $scope.type = type;
 
-    // Convenience function that fetches the files and updates the scope.
-    function fetchFiles(root, path) {
-        if (!path) {
-            // The path is unknown, the user must be requesting a root.
-            if (root === 'site') {
-                promise = $mmaFiles.getSiteFiles();
-                title = $translate('mma.files.sitefiles');
-            } else if (root === 'my') {
-                promise = $mmaFiles.getMyFiles();
-                title = $translate('mma.files.myprivatefiles');
-            } else {
-                // Upon error we create a fake promise that is rejected.
-                promise = $q.reject();
-                title = (function() {
-                    var q = $q.defer();
-                    q.resolve('');
-                    return q.promise;
-                })();
-            }
-        } else {
-            // Serve the files the user requested.
-            pathdata = JSON.parse(path);
-            promise = $mmaFiles.getFiles(pathdata);
+    $translate('mma.dashboard.' + type + 'dashboard').then(function(string) {
+        $scope.title = string;
+    });
 
-            // Put the title in a promise to act like translate does.
-            title = (function() {
-                var q = $q.defer();
-                q.resolve($stateParams.title);
-                return q.promise;
-            })();
-        }
+    function fetchDashboard(refresh) {
+        return $mmaDashboard.getDashboard(courseid, refresh).then(function(dashboard) {
+            dashboard = dashboard[type + 'dashboard'];
 
-        return $q.all([promise, title]).then(function(data) {
-            var files = data[0],
-                title = data[1];
+            return $mmaDashboard.getDashboardUserData(dashboard, courseid).then(function(dashboard) {
+                $scope.dashboard = dashboard;
+            });
 
-            $scope.files = files.entries;
-            $scope.count = files.count;
-            $scope.title = title;
-        }, function() {
-            $mmUtil.showErrorModal('mma.files.couldnotloadfiles', true);
+        }, function(message) {
+            $mmUtil.showErrorModal(message);
         });
     }
 
-    fetchFiles(root, path).finally(function() {
-        $scope.filesLoaded = true;
-    });
-
-    $scope.refreshFiles = function() {
-        $mmaFiles.invalidateDirectory(root, path).finally(function() {
-            fetchFiles(root, path).finally(function() {
-                $scope.$broadcast('scroll.refreshComplete');
-            });
+    fetchDashboard().then(function() {
+        // Add log in Moodle.
+        $mmSite.write('core_dashboard_view_dashboard', {
+            courseid: courseid,
+            userid: 0
         });
-    };
-
-    // Update list if we come from upload page (we don't know if user upoaded a file or not).
-    // List is invalidated in upload state after uploading a file.
-    $scope.$on('$ionicView.enter', function(e) {
-        var forwardView = $ionicHistory.forwardView();
-        if (forwardView && forwardView.stateName === mmaFilesUploadStateName) {
-            $scope.filesLoaded = false;
-            fetchFiles(root, path).finally(function() {
-                $scope.filesLoaded = true;
-            });
-        }
+    })
+    .finally(function() {
+        $scope.dashboardLoaded = true;
     });
 
-    $scope.showUpload = function() {
-        return (root === 'my' && !path && $mmSite.canUploadFiles());
-    };
-
-    // When we are in the root of the private files we can add more files.
-    $scope.add = function() {
-        if (!$mmApp.isOnline()) {
-            $mmUtil.showErrorModal('mma.files.errormustbeonlinetoupload', true);
-        } else {
-            $state.go('site.files-upload', {root: root, path: path});
-        }
+    $scope.refreshDashboard = function() {
+        fetchDashboard(true).finally(function() {
+            $scope.$broadcast('scroll.refreshComplete');
+        });
     };
 });

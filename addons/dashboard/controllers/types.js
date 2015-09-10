@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.files')
+angular.module('mm.addons.dashboard')
 
 /**
- * Directive to detect chanegs on file inputs (ng-Change doesn't work in that type of input).
+ * Note types view controller.
  *
- * @module mm.addons.files
- * @ngdoc directive
- * @name mmaFilesOnChange
+ * @module mm.addons.dashboard
+ * @ngdoc controller
+ * @name mmaDashboardTypesCtrl
  */
-.directive('mmaFilesOnChange', function() {
-  return {
-    restrict: 'A',
-    link: function (scope, element, attrs) {
-      var onChangeHandler = scope.$eval(attrs.mmaFilesOnChange);
-      element.bind('change', onChangeHandler);
-    }
-  };
+.controller('mmaDashboardTypesCtrl', function($scope, $stateParams) {
+    var course = $stateParams.course,
+        courseid = course.id;
+    $scope.courseid = courseid;
 });

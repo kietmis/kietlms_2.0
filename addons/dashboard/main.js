@@ -12,97 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-angular.module('mm.addons.dashboard', ['mm.core'])
+angular.module('mm.addons.dashboard', [])
 
-.constant('mmaFilesUploadStateName', 'site.files-upload')
-.constant('mmaFilesSharedFilesStore', 'shared_files')
-.constant('mmaFilesMyComponent', 'mmaFilesMy')
-.constant('mmaFilesSiteComponent', 'mmaFilesSite')
-.constant('mmaFilesPriority', 200)
+.constant('mmaDashboardPriority', 200)
+.constant('mmaDashboardAddNotePriority', 200)
 
-.config(function($stateProvider, $mmSideMenuDelegateProvider, mmaFilesUploadStateName, mmaFilesPriority) {
+.config(function($stateProvider, $mmUserDelegateProvider, $mmSideMenuDelegateProvider, mmaDashboardPriority, mmaDashboardAddNotePriority) {
 
     $stateProvider
-        .state('site.files', {
-            url: '/files',
-            views: {
-                'site': {
-                    controller: 'mmaFilesIndexController',
-                    templateUrl: 'addons/files/templates/index.html'
-                }
+
+    .state('site.dashboard', {
+        url: '/dashboard',
+        views: {
+            'site': {
+                templateUrl: 'addons/dashboard/templates/index.html',
+                controller: 'mmaDashboardIndexCtrl'
             }
-        })
-
-        .state('site.files-list', {
-            url: '/list',
-            params: {
-                path: false,
-                root: false,
-                title: false
-            },
-            views: {
-                'site': {
-                    controller: 'mmaFilesListController',
-                    templateUrl: 'addons/files/templates/list.html'
-                }
-            }
-        })
-
-        .state(mmaFilesUploadStateName, {
-            url: '/upload',
-            params: {
-                path: false,
-                root: false
-            },
-            views: {
-                'site': {
-                    controller: 'mmaFilesUploadCtrl',
-                    templateUrl: 'addons/files/templates/upload.html'
-                }
-            }
-        })
-
-        .state('site.files-choose-site', {
-            url: '/choose-site',
-            params: {
-                file: null
-            },
-            views: {
-                'site': {
-                    controller: 'mmaFilesChooseSiteCtrl',
-                    templateUrl: 'addons/files/templates/choosesite.html'
-                }
-            }
-        });
-
-    // Register side menu addon.
-    $mmSideMenuDelegateProvider.registerNavHandler('mmaFiles', '$mmaFilesHandlers.sideMenuNav', mmaFilesPriority);
-
-})
-
-.run(function($mmaFiles, $state, $mmSitesManager, $mmUtil, $mmaFilesHelper, $ionicPlatform, $mmApp) {
-
-    // Search for new files shared with the upload (to upload).
-    if (ionic.Platform.isIOS()) {
-        // In iOS we need to manually check if there are new files in the app Inbox folder.
-        function searchToUpload() {
-            $mmApp.ready().then(function() {
-                $mmaFiles.checkIOSNewFiles().then(function(fileEntry) {
-                    $mmSitesManager.getSites().then(function(sites) {
-                        if (sites.length == 0) {
-                            $mmUtil.showErrorModal('mma.files.errorreceivefilenosites', true);
-                        } else if (sites.length == 1) {
-                            $mmaFilesHelper.showConfirmAndUploadInSite(fileEntry, sites[0].id);
-                        } else {
-                            $state.go('site.files-choose-site', {file: fileEntry});
-                        }
-                    });
-                });
-            });
+        },
+        params: {
+            course: null
         }
-        // We want to check it at app start and when the app is resumed.
-        $ionicPlatform.on('resume', searchToUpload);
-        searchToUpload();
-    }
+    })
 
+    .state('site.dashboard-list', {
+        url: '/dashboard-list',
+        views: {
+            'site': {
+                templateUrl: 'addons/dashboard/templates/list.html',
+                controller: 'mmaDashboardListCtrl'
+            }
+        },
+        params: {
+            courseid: null,
+            type: null
+        }
+    });
+
+    // Register plugin on user profile.
+    $mmUserDelegateProvider.registerProfileHandler('mmaDashboard:addNote', '$mmaDashboardHandlers.addNote', mmaDashboardAddNotePriority);
+
+    // Register courses handler.
+    $mmCoursesDelegateProvider.registerNavHandler('mmaDashboard', '$mmaDashboardHandlers.sideMenuNav', mmaDashboardPriority);
 });

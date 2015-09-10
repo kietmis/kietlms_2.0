@@ -1,12 +1,8 @@
 {
-    "errorcapturingaudio": "خطا در ضبط صدا",
-    "errorcapturingvideo": "خطا در ضبط ویدئو",
-    "file": "فایل",
-    "fileuploaded": "فایل آپلود شده",
-    "myfiles": "فایلهای من",
-    "sitefiles": "فایلهای سایت",
-    "success": "موفق",
-    "uploadafile": "قرار دادن یک فایل در سایت",
-    "uploading": "درحال بارگذاری",
-    "video": "ویدئو"
+    "addnewnote": "اضافه کردن یک یادداشت جدید",
+    "coursenotes": "یادداشت‌های درس",
+    "note": "یادداشت",
+    "personalnotes": "یادداشت‌های خصوصی",
+    "publishstate": "دامنه",
+    "sitenotes": "یادداشت‌های سایت"
 }
